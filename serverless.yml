@@ -1,6 +1,9 @@
 # NOTE: update this with your service name
 service: notes-app-api
 
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
 
 plugins:
   - serverless-webpack
@@ -34,7 +37,7 @@ iamRoleStatements:
 
 functions:
   handler:
-    handler: dist/server.main
+    handler: "server.main"
     events:
       - http:
           path: v1

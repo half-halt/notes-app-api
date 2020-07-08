@@ -1,4 +1,10 @@
 [build]
-  command = "yarn webpack"   # need --mode production
-  publish = "./dist"
-  functions = ".functions"
+  command = "yarn build"   # need --mode production
+  functions = "./dist"
+
+#[dev]
+#  publish = "./dist"
+
+[context.production.environment]
+  NOTES_REGION="us-west-2"
+  NOTES_S3_BUCKET="some-s3-bucket"

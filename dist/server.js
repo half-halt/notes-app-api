@@ -81,106 +81,10 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./handler.ts");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/handler.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
-
-/***/ "./handler.ts":
-/*!********************!*\
-  !*** ./handler.ts ***!
-  \********************/
-/*! exports provided: main */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "main", function() { return main; });
-/* harmony import */ var graphql__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! graphql */ "graphql");
-/* harmony import */ var graphql__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(graphql__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "lodash");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _src_root_object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/root-object */ "./src/root-object.ts");
-/* harmony import */ var _src_context__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/context */ "./src/context.ts");
-/* harmony import */ var graphql_iso_date__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! graphql-iso-date */ "graphql-iso-date");
-/* harmony import */ var graphql_iso_date__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(graphql_iso_date__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _src_schema_graphql__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/schema.graphql */ "./src/schema.graphql");
-/* harmony import */ var _src_schema_graphql__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_src_schema_graphql__WEBPACK_IMPORTED_MODULE_5__);
-
-
-
-
-
-///@ts-ignore
-
-const main = async (event) => {
-    const headers = {
-        "access-control-allow-origin": "*",
-        "access-control-allow-credentials": true,
-    };
-    try {
-        if (Object(lodash__WEBPACK_IMPORTED_MODULE_1__["isNil"])(event.body)) {
-            throw new Error('ERROR: There was no request body present');
-        }
-        const body = JSON.parse(event.body);
-        const variables = Object(lodash__WEBPACK_IMPORTED_MODULE_1__["get"])(body, 'variables', {});
-        if (Object(lodash__WEBPACK_IMPORTED_MODULE_1__["isEmpty"])(body.query) || !Object(lodash__WEBPACK_IMPORTED_MODULE_1__["isString"])(body.query)) {
-            throw new Error(`ERROR; There was not 'query' provided.`);
-        }
-        // Run the graphQL, i find it easier on the client if the request just fails 
-        // if there are errors, so we'll map the 'errors' into an Error if it's non-empty
-        const result = await Object(graphql__WEBPACK_IMPORTED_MODULE_0__["graphql"])(Object(graphql__WEBPACK_IMPORTED_MODULE_0__["buildASTSchema"])(_src_schema_graphql__WEBPACK_IMPORTED_MODULE_5___default.a), body.query, _src_root_object__WEBPACK_IMPORTED_MODULE_2__["root"], new _src_context__WEBPACK_IMPORTED_MODULE_3__["ServiceContext"](event), variables);
-        /*if (Array.isArray(result.errors)) {
-            const messages = result.errors.map((error:any) => {
-                    if (isString(error.message))
-                        return error.message;
-                    return String(error);
-                });
-            return {
-                statusCode: 500,
-                headers,
-                body: JSON.stringify({
-                    code: "GRAPHQL_FAILURE",
-                    errors: messages
-                })
-            };
-
-        } else if (isString(result.errors)) {
-            return {
-                statusCode: 500,
-                headers,
-                body: JSON.stringify({
-                    code: "GRAPHQL_FAILURE",
-                    errors:[ String(result.errors) ]
-                })
-            }
-        }*/
-        return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify(result)
-        };
-    }
-    catch (error) {
-        let message = String(error);
-        if (error instanceof Error)
-            message = message.toString();
-        else if (Object(lodash__WEBPACK_IMPORTED_MODULE_1__["isString"])(error.message))
-            message = error.message;
-        const code = 'UNKNOWN_ERROR';
-        return ({
-            statusCode: 500,
-            headers,
-            body: JSON.stringify({
-                message,
-                code
-            })
-        });
-    }
-};
-
-
-/***/ }),
 
 /***/ "./src/context.ts":
 /*!************************!*\
@@ -256,6 +160,110 @@ class ServiceContext {
         return sub.Value;
     }
 }
+
+
+/***/ }),
+
+/***/ "./src/handler.ts":
+/*!************************!*\
+  !*** ./src/handler.ts ***!
+  \************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var graphql__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! graphql */ "graphql");
+/* harmony import */ var graphql__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(graphql__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "lodash");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _root_object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./root-object */ "./src/root-object.ts");
+/* harmony import */ var _context__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./context */ "./src/context.ts");
+/* harmony import */ var graphql_iso_date__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! graphql-iso-date */ "graphql-iso-date");
+/* harmony import */ var graphql_iso_date__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(graphql_iso_date__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _schema_graphql__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./schema.graphql */ "./src/schema.graphql");
+/* harmony import */ var _schema_graphql__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_schema_graphql__WEBPACK_IMPORTED_MODULE_5__);
+
+
+
+
+
+///@ts-ignore
+
+const _main = async (event) => {
+    const headers = {
+        "access-control-allow-origin": "*",
+        "access-control-allow-credentials": true,
+    };
+    try {
+        if (Object(lodash__WEBPACK_IMPORTED_MODULE_1__["isNil"])(event.body)) {
+            throw new Error('ERROR: There was no request body present');
+        }
+        const body = JSON.parse(event.body);
+        const variables = Object(lodash__WEBPACK_IMPORTED_MODULE_1__["get"])(body, 'variables', {});
+        if (Object(lodash__WEBPACK_IMPORTED_MODULE_1__["isEmpty"])(body.query) || !Object(lodash__WEBPACK_IMPORTED_MODULE_1__["isString"])(body.query)) {
+            throw new Error(`ERROR; There was not 'query' provided.`);
+        }
+        // Run the graphQL, i find it easier on the client if the request just fails 
+        // if there are errors, so we'll map the 'errors' into an Error if it's non-empty
+        const result = await Object(graphql__WEBPACK_IMPORTED_MODULE_0__["graphql"])(Object(graphql__WEBPACK_IMPORTED_MODULE_0__["buildASTSchema"])(_schema_graphql__WEBPACK_IMPORTED_MODULE_5___default.a), body.query, _root_object__WEBPACK_IMPORTED_MODULE_2__["root"], new _context__WEBPACK_IMPORTED_MODULE_3__["ServiceContext"](event), variables);
+        /*if (Array.isArray(result.errors)) {
+            const messages = result.errors.map((error:any) => {
+                    if (isString(error.message))
+                        return error.message;
+                    return String(error);
+                });
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({
+                    code: "GRAPHQL_FAILURE",
+                    errors: messages
+                })
+            };
+
+        } else if (isString(result.errors)) {
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({
+                    code: "GRAPHQL_FAILURE",
+                    errors:[ String(result.errors) ]
+                })
+            }
+        }*/
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(result)
+        };
+    }
+    catch (error) {
+        let message = String(error);
+        if (error instanceof Error)
+            message = message.toString();
+        else if (Object(lodash__WEBPACK_IMPORTED_MODULE_1__["isString"])(error.message))
+            message = error.message;
+        const code = 'UNKNOWN_ERROR';
+        return ({
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+                message,
+                code
+            })
+        });
+    }
+};
+exports.handler = async function (_event, _context) {
+    console.log('handler');
+    console.log(_context);
+    //console.log(_context);
+    //console.log(_event);
+    if (typeof (_main) === 'function')
+        return { statusCode: 200, body: "ok buddy" };
+    return "wft";
+};
 
 
 /***/ }),

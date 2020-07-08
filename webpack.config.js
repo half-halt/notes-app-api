@@ -2,11 +2,12 @@
 const nodeExternals = require("webpack-node-externals");
 const { TsConfigPathsPlugin } = require("awesome-typescript-loader");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const dotenv = require('dotenv');
 const path = require('path');
 
 const commonConfig = {
   entry: {
-    server: './handler.ts'
+    server: './src/handler.ts'
   },
   // Generate sourcemaps for proper error messages
   devtool: 'source-map',
@@ -62,5 +63,6 @@ module.exports = (env, args) => {
   const mode = args.mode || "development";
   const config = configs[mode] || {};
  
+  dotenv.config();
   return Object.assign({}, commonConfig, config);
 }
