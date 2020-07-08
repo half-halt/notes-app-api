@@ -94,7 +94,7 @@ exports.handler = async function (_event: any, _context: any) {
     //console.log(_context);
     //console.log(_event);
     if (typeof(_main) === 'function')
-        return { statusCode: 200, body:"ok buddy"};
+        return { statusCode: 200, body:"ok buddy" + JSON.stringify(process.env)};
 
     return "wft";
 }
