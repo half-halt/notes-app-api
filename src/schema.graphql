@@ -1,0 +1,26 @@
+scalar DateTime
+
+input NoteInput {
+    content: String!
+    attachment: String
+}
+
+type Note {
+    noteId: ID!
+    content: String!
+    attachment: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    userId: ID!
+}
+
+type Query {
+    note(noteId: ID!): Note
+    notes: [Note]!
+}
+
+type Mutation {
+    createNote(input: NoteInput): Note
+    updateNote(noteId: ID!, input: NoteInput): Note
+    deleteNote(noteId: ID!): Boolean
+}

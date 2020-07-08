@@ -1,0 +1,4 @@
+[build]
+  command = "yarn webpack"   # need --mode production
+  publish = "./dist"
+  functions = ".functions"
