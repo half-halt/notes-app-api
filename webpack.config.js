@@ -1,30 +1,30 @@
-//const slsw = require("serverless-webpack");
 const nodeExternals = require("webpack-node-externals");
 const { TsConfigPathsPlugin } = require("awesome-typescript-loader");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const dotenv = require('dotenv');
 const path = require('path');
 
 const commonConfig = {
-  entry: {
-    server: './src/handler.ts'
+  entry:{
+    server: path.resolve(__dirname, 'src', 'handler.ts')
+  },
+  output:{
+    path: path.resolve(__dirname, 'dist'),
   },
   // Generate sourcemaps for proper error messages
   devtool: 'source-map',
   // Since 'aws-sdk' is not compatible with webpack,
   // we exclude all node dependencies
   externals: [nodeExternals()],
-  mode: "development",
-  //mode: slsw.lib.webpack.isLocal ? "development" : "production",
-
   performance: {
     // Turn off size warnings for entry points
     hints: false
   },
   resolve: {
-    extensions: ['.ts', '.json', '.graphql'],
+    extensions: ['.ts', '.json', '.gql', '.graphql'],
     alias: {
-      '~': path.resolve(__dirname, '/src')
+      '~': path.resolve(__dirname, 'src')
     }
   },
   plugins: [
@@ -39,7 +39,7 @@ const commonConfig = {
         exclude: /node_modules/
       },
       {
-        test: /\.graphql$/,
+        test: /\.graphql$|\.gql$/,
         use: "graphql-tag/loader",
         exclude: /node_modules/
       }
@@ -49,10 +49,26 @@ const commonConfig = {
 
 const configs = {
   development: {
-    mode: 'development'
+    mode: 'development',
+    plugins:[
+      new CopyPlugin({
+        patterns:[{ 
+              from: path.resolve(__dirname, '.env'),
+              noErrorOnMissing: true
+        }]
+      })
+    ]
   },
   production: {
     mode: 'production',
+    plugins:[
+      new CopyPlugin({
+        patterns:[{
+          from: path.resolve(__dirname, '.env.production'),
+          noErrorOnMissing: true
+        }]
+      })
+    ],
     optimization: {
       minimize: true
     }
@@ -64,5 +80,8 @@ module.exports = (env, args) => {
   const config = configs[mode] || {};
  
   dotenv.config();
-  return Object.assign({}, commonConfig, config);
+  const webpackConfig = Object.assign({}, commonConfig, config);
+  if (config.plugins)
+    webpackConfig.plugins = config.plugins.concat(commonConfig.plugins);
+  return webpackConfig;
 }

@@ -1,10 +1,12 @@
 [build]
-  command = "yarn build"   # need --mode production
+  command = "yarn build"
   functions = "./dist"
 
 #[dev]
 #  publish = "./dist"
 
-[context.production.environment]
-  NOTES_REGION="us-west-2"
-  NOTES_S3_BUCKET="some-s3-bucket"
+[[redirects]]
+  from="/v1"
+  to="/.netlify/functions/server"
+  status=200
+  force=true

@@ -1,6 +1,6 @@
-import { NoteStore } from '../storage';
+import { NoteStore } from '../../storage';
 import { isNil } from 'lodash';
-import { TypeResolver } from '.';
+import { TypeResolver } from '../../resolvers';
 
 interface DeleteNoteArguments 
 {

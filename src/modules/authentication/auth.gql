@@ -1,0 +1,9 @@
+enum AuthenticatedRoles
+{ 
+	USER 
+	ADMIN 
+	SHOWMGR
+}
+
+directive @authenticated(is: Boolean) on FIELD_DEFINITION
+directive @roles(roles: [AuthenticatedRoles]) on FIELD_DEFINITION

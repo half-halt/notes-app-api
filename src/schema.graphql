@@ -1,4 +1,7 @@
+directive @authenticated on FIELD_DEFINITION
+
 scalar DateTime
+
 
 input NoteInput {
     content: String!
@@ -7,7 +10,7 @@ input NoteInput {
 
 type Note {
     noteId: ID!
-    content: String!
+    content: String
     attachment: String
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -15,8 +18,8 @@ type Note {
 }
 
 type Query {
-    note(noteId: ID!): Note
-    notes: [Note]!
+    note(noteId: ID!): Note 
+    notes: [Note]! @authenticated
 }
 
 type Mutation {

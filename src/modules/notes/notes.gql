@@ -1,0 +1,30 @@
+scalar DateTime
+
+input NoteInput 
+{
+    content: String!
+    attachment: String
+}
+
+type Note 
+{
+    noteId: ID!
+    content: String
+    attachment: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    userId: ID!
+}
+
+extend type Query 
+{
+    note(noteId: ID!): Note  @authenticated @roles(roles: [USER])
+    notes: [Note]! @authenticated
+}
+
+extend type Mutation 
+{
+    createNote(input: NoteInput): Note @authenticated
+    updateNote(noteId: ID!, input: NoteInput): Note @authenticated
+    deleteNote(noteId: ID!): Boolean @authenticated
+}

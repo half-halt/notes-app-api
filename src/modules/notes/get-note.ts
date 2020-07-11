@@ -1,7 +1,7 @@
-import { NoteStore } from '../storage';
-import { Note } from '../models';
+import { NoteStore } from '../../storage';
+import { Note } from '../../models';
 import { isString, isEmpty, isNil } from 'lodash';
-import { TypeResolver } from '.';
+import { TypeResolver } from '../../resolvers';
  
 interface GetNoteArguments 
 {

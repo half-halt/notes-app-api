@@ -1,9 +1,9 @@
-import { Note } from "../models";
-import { NoteStore } from '../storage';
-import { TypeResolver } from '.';
+import { Note } from "../../models";
+import { NoteStore } from '../../storage';
+import { TypeResolver } from '../../resolvers';
 
 export const notes: TypeResolver<Note[]> = async (_, context) => {
-	const userId = await context.getUserId();
+	const userId = (context as any).userId;
 	const notes = await NoteStore.query({
 		KeyConditionExpression: "userId = :userId",
 		ExpressionAttributeValues:{
@@ -11,6 +11,6 @@ export const notes: TypeResolver<Note[]> = async (_, context) => {
 		}
 	});
 
-	console.log('notes', notes);
+	console.log('--> notes have finsihed', notes.length);
 	return notes;
 }

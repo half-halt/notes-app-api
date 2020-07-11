@@ -1,8 +1,0 @@
-{
-    "body":"{\"query\": \"mutation createNote($note: NoteInput) { createNote(input: $note) { content attachment userId createdAt noteId } }\",\"variables\":{ \"note\":{ \"content\": \"hello world\",\"attachment\": \"hello.jpg\" } } }",
-    "requestContext": {
-        "identity": {
-            "cognitoIdentityId": "USER-SUB-1234"
-        }
-    }
-}

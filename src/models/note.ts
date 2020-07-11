@@ -1,4 +1,4 @@
-import { v4 as uuid } from 'uuid'; 
+const nanoid = require('nano-id');
 
 export class Note {
 	public readonly noteId: string;
@@ -10,7 +10,7 @@ export class Note {
 
 	constructor(user: string) {
 		this.userId = user;
-		this.noteId = uuid();
+		this.noteId = nanoid(12);
 		this._createdAt = (new Date()).toJSON();
 		this._updatedAt = this._createdAt;
 	}
