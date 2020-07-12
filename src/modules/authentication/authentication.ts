@@ -2,6 +2,7 @@ import { GraphQLModule } from '@graphql-modules/core';
 import jwt from 'jsonwebtoken';
 import jwkToPem, { JWK } from 'jwk-to-pem';
 import { AuthenticationProvider } from './authentication-provider';
+import { DatabaseClientProvider } from './database-client-provider';
 import { authLog } from "./index";
 //@ts-ignore
 import typeDefs from './auth.gql'; 
@@ -107,7 +108,7 @@ export type UserContext = UnauthenticatedContext|AuthenticatedContext;
 
 export const AuthenticationModule  = new GraphQLModule({
 	typeDefs,
-	providers: [AuthenticationProvider],
+	providers: [AuthenticationProvider, DatabaseClientProvider],
 	context: ({event}): UserContext => {
 		try 
 		{

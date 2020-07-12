@@ -2,7 +2,7 @@ import { Note } from '../../models';
 import { NoteStore } from '../../storage';
 import { isNil } from 'lodash';
 import { TypeResolver } from '../../resolvers';
-import { NoteInput } from './create-note';
+import { NoteInput } from './notes-datasource';
 
 interface UpdateNoteArguments 
 {

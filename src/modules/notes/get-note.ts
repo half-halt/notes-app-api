@@ -1,29 +1,26 @@
-import { NoteStore } from '../../storage';
-import { Note } from '../../models';
 import { isString, isEmpty, isNil } from 'lodash';
-import { TypeResolver } from '../../resolvers';
+import { notesLog, NotesModuleContext } from './index';
  
 interface GetNoteArguments 
 {
 	noteId: string;
 }
 
-export const getNote: TypeResolver<Note, GetNoteArguments> = async ({
-	noteId
-}, context) => {
-	const userId = await context.getUserId();
+export async function getNote(_parent: any, { noteId }: GetNoteArguments, context: NotesModuleContext)
+{
 	if (!isString(noteId) || isEmpty(noteId))
+	{
+		notesLog.error("An invalid 'noteId' argument was passed to getNote(): %s", noteId);
 		throw new Error(`An invalid value for 'noteId' was provided: "${String(noteId)}"`);
-		
-	const note = await NoteStore.get({
-		Key:{
-			userId,
-			noteId
-		}
-	});
+	}
 
+	notesLog.debug('Processing getNote(%s)', noteId);
+	const note = context.notesDataSource.get(noteId);
 	if (isNil(note))
-		throw new Error(`Unable to locate note: ${userId}::${noteId}`);
+	{
+		notesLog.error(`Unable to locate note: %s::%s`, context.userId, noteId);
+		throw new Error(`Unable to locate note: ${context.userId}::${noteId}`);
+	}
 
 	return note;
 }

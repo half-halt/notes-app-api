@@ -22,13 +22,11 @@ function writeLog(logLevel: LEVEL, component: string|null,  message: string, ...
 {
 	if (logLevel <= currentLevel)
 	{
-		const timestamp = chalk.grey((new Date()).toJSON());
-		const logMessage = format(message, ...args);
-		
+		const logMessage = format(message, ...args);		
 		if ((typeof(component) === 'string') && (component.length != 0))
-			console.log(`${timestamp} ${LEVEL_NAME[logLevel]} :: ${chalk.white(component.toUpperCase())}: ${logMessage}`);
+			console.log(`${LEVEL_NAME[logLevel]} :: ${chalk.cyanBright(component.toUpperCase())}: ${logMessage}`);
 		else
-			console.log(`${timestamp} ${LEVEL_NAME[logLevel]} :: ${logMessage}`);
+			console.log(`${LEVEL_NAME[logLevel]} :: ${logMessage}`);
 	}
 }
 

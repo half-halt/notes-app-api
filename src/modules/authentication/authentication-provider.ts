@@ -4,14 +4,14 @@ import { getFieldsWithDirectives } from "graphql-tools";
 import { forEach } from "lodash";
 import { isAuthenticated } from "./is-authenticated";
 import { withRole } from "./with-role";
-import { Injectable } from '@graphql-modules/di';
+import { Injectable, ProviderScope } from '@graphql-modules/di';
 
 /**
  * Authentication provider which can be consumed by dependent modules, 
  * this provides the 'composeResolvers' function which should be invoked
  * by the root module to apply all the directives at once.
  */
-@Injectable()
+@Injectable({scope: ProviderScope.Application})
 export class AuthenticationProvider
 {
 	public composeResolvers(typeDefs: DocumentNode)

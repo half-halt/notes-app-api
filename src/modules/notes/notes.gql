@@ -13,12 +13,12 @@ type Note
     attachment: String
     createdAt: DateTime!
     updatedAt: DateTime!
-    userId: ID!
+    ownerId: ID!
 }
 
 extend type Query 
 {
-    note(noteId: ID!): Note  @authenticated @roles(roles: [USER])
+    note(noteId: ID!): Note  @authenticated
     notes: [Note]! @authenticated
 }
 
