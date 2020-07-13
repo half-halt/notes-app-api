@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { format } from 'util';
+import process from 'process';
 
 export enum LEVEL
 {
@@ -16,7 +17,11 @@ const LEVEL_NAME = [
 	chalk.blueBright('[ D ]')
 ];
 
-var currentLevel = (process.env.NODE_ENV === 'production') ? LEVEL.VERBOSE : LEVEL.DEBUG;
+// Determine the initial level
+var currentLevel = (process.env.NODE_ENV === 'production') ? 
+	((process.env.DEBUG_API === 'on') ? LEVEL.DEBUG : LEVEL.VERBOSE) :
+	LEVEL.DEBUG;
+console.log('CurrentLevel:', currentLevel);
 
 function writeLog(logLevel: LEVEL, component: string|null,  message: string, ...args: any[])
 {
