@@ -40,7 +40,6 @@ export class AuthenticationProvider
 			});
 		});
 	
-		console.log('resolver-map:', map);
 		return map;
 	}
 }

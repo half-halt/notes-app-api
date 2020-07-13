@@ -1,13 +1,15 @@
 import { GraphQLModule, ModuleContext } from "@graphql-modules/core";
 import { AuthenticatedContext, AuthenticationModule } from "../authentication";
-// @ts-ignore
-import typeDefs from './notes.gql';
 import { NotesDataSource, Note, notesLog } from './notes-datasource';
 import { createNote } from './create-note';
 import { listNotes } from './list-notes';
 import { getNote } from './get-note';
 import { updateNote } from './update-note';
 import { deleteNote } from './delete-note';
+import { recentNotes, NoteSummary } from  './recent';
+
+// @ts-ignore  Importing a GraphQL file does not currently have type
+import typeDefs from './notes.gql';
 
 /**
  * Represtation of the cotnext we consume, defining a customer interface
@@ -35,6 +37,7 @@ export const NotesModule = new GraphQLModule({
 		Query: {
 			note: getNote,
 			notes: listNotes,
+			recent: recentNotes,
 		},
 		Mutation: {
 			createNote,
@@ -48,6 +51,12 @@ export const NotesModule = new GraphQLModule({
 			attachment: (note: Note) => note.data.attachment || null,
 			createdAt: (note: Note) => new Date(note.data.created),
 			updatedAt: (note: Note) => new Date(note.ts / 1000)
+		},
+		NoteSummary: {
+			noteId: (summary: NoteSummary) => summary.ref.id,
+			hasAttachment: (summary: NoteSummary) => summary.hasAttachment,
+			summary: (summary: NoteSummary) => summary.summary,
+			modified: (summary: NoteSummary) => new Date(summary.ts / 1000)
 		}
 	},
 })

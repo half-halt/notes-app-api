@@ -14,6 +14,7 @@ export const notesLog = log.create('notes');
  */
 export interface Note 
 {
+	attachment: any;
 	ref: values.Ref;
 	ts: number;
 	data: {
@@ -33,16 +34,26 @@ export interface NoteInput
 	attachment?: string
 }
 
+/**
+ * Handles reading/writing data to and from the database for our 'note' objects
+ */
 @Injectable({ scope: ProviderScope.Session })
 export class NotesDataSource implements OnRequest
 {
 	private _notes: Map<string, Note> = new Map<string, Note>();
 	private _userId: string | null = null;
 
+	/**
+	 * Ctor
+	 */
 	constructor(private clientProvider: DatabaseClientProvider)
 	{		
 	}
 
+	/**
+	 * Called when a new request has arrived, allows is to get the 
+	 * userId and create our datbase client.
+	 */
 	async onRequest(sessionInfo: ModuleSessionInfo)
 	{
 		if (sessionInfo.context.isAuthenticated)
@@ -100,6 +111,9 @@ export class NotesDataSource implements OnRequest
 		}
 	}
 
+	/**
+	 * Deletes the provided notes from the store.
+	 */
 	async delete(noteId: string)
 	{
 		invariant(isString(this._userId) && !isEmpty(this._userId), 'NotesDataSource has an invalid user id');
@@ -167,6 +181,8 @@ export class NotesDataSource implements OnRequest
 	async get(noteId: string)
 	{
 		invariant(isString(this._userId) && !isEmpty(this._userId), 'NotesDataSource has an invalid user id');
+		invariant(!isEmpty(noteId), 'Invalid noteId was specified to \'delete\'')
+
 		const note = this._notes.get(noteId);
 		if (!isNil(note))
 		{

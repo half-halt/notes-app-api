@@ -24,7 +24,7 @@ const argumentsSchema = yup.object().shape({
 		})
 		.required('No \'input\' argument was specified for \'updateNote\'')
 	})
-	.required('No argumens were specified to \'updateNote\'');
+	.required('No argument were specified to \'updateNote\'');
 
 /**
  * Implements the 'updateNote' mutation. 

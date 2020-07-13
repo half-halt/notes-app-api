@@ -16,10 +16,19 @@ type Note
     ownerId: ID!
 }
 
+type NoteSummary
+{
+    noteId: ID!
+    summary: String
+    hasAttachment: Boolean!
+    modified: DateTime!
+}
+
 extend type Query 
 {
     note(noteId: ID!): Note  @authenticated
     notes: [Note]! @authenticated
+    recent(max: Int): [NoteSummary]! @authenticated
 }
 
 extend type Mutation 

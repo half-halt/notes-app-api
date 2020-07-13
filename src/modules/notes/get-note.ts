@@ -2,6 +2,7 @@ import { ApolloError } from 'apollo-server';
 import chalk from 'chalk';
 import { isString, isEmpty, isNil } from 'lodash';
 import { notesLog, NotesModuleContext } from './index';
+import * as yup from 'yup';
  
 /**
  * Arguments to our 'note' query
@@ -11,6 +12,14 @@ export interface GetNoteArguments
 	noteId: string;
 }
 
+// Verifies thew structure of our arguments
+const argumentsSchema = yup.object().shape({
+	noteId: yup.string()
+		.required('The \'noteId\' argument was unspecified for \'updateNote\'')
+		.matches(/^[0-9]+$/, 'The \'noteId\' argument for \'updateNote\' was invalid'),
+	})
+	.required('No argument were specified to \'updateNote\'');
+
 /**
  * Implements our 'note' query resolver.
  * 
@@ -18,8 +27,11 @@ export interface GetNoteArguments
  * @param arguments The arguments to the query
  * @param context The current context 
  */
-export async function getNote(_parent: any, { noteId }: GetNoteArguments, context: NotesModuleContext)
+export async function getNote(_parent: any, args: GetNoteArguments, context: NotesModuleContext)
 {
+	argumentsSchema.validateSync(args);
+	const {noteId } = args;
+
 	if (!isString(noteId) || isEmpty(noteId))
 	{
 		notesLog.error("An invalid 'noteId' argument was passed to getNote(): %s", noteId);
