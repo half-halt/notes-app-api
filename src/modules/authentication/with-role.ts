@@ -6,13 +6,12 @@ import { authLog } from "./index";
 export function withRole(roles: string[]|string)
 {
 	return ( next: CallableFunction) =>
-		function checkAuthentication(root: any, args: any, context: UserContext, info: any)
+		function validateRole(root: any, args: any, context: UserContext, info: any)
 		{
 			// Step 1: Verify the user is authenticated to ensure that we've got
 			// the roles array.
 			if ((typeof(context.isAuthenticated) !== 'boolean') || !context.isAuthenticated)
 			{
-				console.log(root, context);
 				authLog.error('Resolver required authentication');
 				throw new UnauthenticatedError('User is unauthenticated');
 			}

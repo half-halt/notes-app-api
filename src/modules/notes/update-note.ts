@@ -1,52 +1,52 @@
-import { Note } from '../../models';
-import { NoteStore } from '../../storage';
-import { isNil } from 'lodash';
-import { TypeResolver } from '../../resolvers';
 import { NoteInput } from './notes-datasource';
+import { NotesModuleContext, notesLog } from './index';
+import { ApolloError } from 'apollo-server';
+import * as yup from 'yup';
+import chalk from 'chalk';
 
+/**
+ * Type we expect as arguments to the mutation.
+ */
 interface UpdateNoteArguments 
 {
 	noteId: string,
     input: NoteInput
 }
 
-export const updateNote: TypeResolver<Note, UpdateNoteArguments> = async ({ 
-	input,
-	noteId 
-}, context) => { 
+// Verifies thew structure of our input arguments
+const argumentsSchema = yup.object().shape({
+		noteId: yup.string()
+			.required('The \'noteId\' argument was unspecified for \'updateNote\'')
+			.matches(/^[0-9]+$/, 'The \'noteId\' argument for \'updateNote\' was invalid'),
+		input: yup.object().shape({
+			content: yup.string().optional(),
+			attachment: yup.string().optional(),
+		})
+		.required('No \'input\' argument was specified for \'updateNote\'')
+	})
+	.required('No argumens were specified to \'updateNote\'');
 
-	const userId = await context.getUserId();
-	const note = await NoteStore.get({
-		Key:{
-			userId,
-			noteId
-		}
-	});
+/**
+ * Implements the 'updateNote' mutation. 
+ * 
+ * @param _parent The root object
+ * @param arguments The arguments passed to the mutation
+ * @param context The context we are running in
+ */
+export async function updateNote(_parent: any, args: UpdateNoteArguments, context: NotesModuleContext)
+{
+	// todo would like promote validation errors a code in the output
+	await argumentsSchema.validate(args);
+	const { noteId, input }	= args;
 
-	if (isNil(note)) {
-		throw new Error(`Unable to locate note: ${userId}::${noteId}`);	
-	}
-
-	note.attachment = input.attachment || null;
-	note.content = input.content || null;
-	note.setUpdate();
-
-	await NoteStore.update({
-		Key: {
-			userId,
-			noteId
-		},
-		UpdateExpression: `SET content = :content, #updated = :updated, attachment =  :attachment`,
-		ExpressionAttributeNames:{
-			'#updated': '_updatedAt'
-		},
-		ExpressionAttributeValues: {
-			':content': note.content,
-			':attachment': note.attachment,
-			':updated': note.updatedAt.toJSON()
-		}
-	});
-	
-    console.log(note);
-	return note;
+    try 
+    {
+		notesLog.debug("Processing updateNote('%s') for user '%s'", chalk.cyan(noteId), chalk.yellow(context.userId));
+        const note = await context.notesDataSource.update(noteId, input);
+        return note;
+    }
+    catch (error)
+    {
+        throw new ApolloError(`Failed to update note: ${noteId}`, 'UPDATE_NOTE_ERROR')
+    }
 }

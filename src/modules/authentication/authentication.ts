@@ -136,8 +136,8 @@ export const AuthenticationModule  = new GraphQLModule({
 		}
 		catch (error)
 		{
-			console.warn('Unable to authenticate user:', error.message || String(error));
-			console.log(error);
+			authLog.warning('Unable to authenticate user: %s', error.message || String(error));
+			authLog.debug('Error: %s', error);
 		}
 
 		return {

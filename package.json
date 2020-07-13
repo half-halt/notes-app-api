@@ -49,6 +49,7 @@
     "@types/lru-cache": "^5.1.0",
     "@types/node": "^14.0.14",
     "@types/uuid": "^8.0.0",
+    "@types/yup": "^0.29.3",
     "awesome-typescript-loader": "^5.2.1",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^6.0.3",
@@ -88,6 +89,7 @@
     "nano-id": "^1.1.0",
     "reflect-metadata": "^0.1.13",
     "tiny-invariant": "^1.1.0",
-    "uuid": "^8.2.0"
+    "uuid": "^8.2.0",
+    "yup": "^0.29.1"
   }
 }

@@ -24,6 +24,9 @@ export interface Note
 	};
 };
 
+/**
+ * Structure of the input to create/modify a note.
+ */
 export interface NoteInput
 {
 	content?: string,
@@ -33,17 +36,21 @@ export interface NoteInput
 @Injectable({ scope: ProviderScope.Session })
 export class NotesDataSource implements OnRequest
 {
-	private notes: Map<string, Note> = new Map<string, Note>();
+	private _notes: Map<string, Note> = new Map<string, Note>();
 	private _userId: string | null = null;
 
 	constructor(private clientProvider: DatabaseClientProvider)
 	{		
 	}
 
-	onRequest(sessionInfo: ModuleSessionInfo)
+	async onRequest(sessionInfo: ModuleSessionInfo)
 	{
-		this._userId = sessionInfo.context.userId;
-		invariant(this._userId, `Context provided an invalid userId`);
+		if (sessionInfo.context.isAuthenticated)
+		{
+			// get our user and prime the cache
+			this._userId = sessionInfo.context.userId;
+			await this.clientProvider.getUserRef(this._userId!);
+		}
 	}
 
 	/**
@@ -53,6 +60,8 @@ export class NotesDataSource implements OnRequest
 	 */
 	async create(noteInput: NoteInput)
 	{
+		invariant(isString(this._userId) && !isEmpty(this._userId), 'NotesDataSource has an invalid user id');
+
 		try
 		{
 			const client = await this.clientProvider.getClient(this._userId!);
@@ -80,8 +89,7 @@ export class NotesDataSource implements OnRequest
 			)
 
 			// Update our cache to include this note.
-			this.notes.set(note.ref.id, note);
-			notesLog.debug('User \'%s\' created new note \'%s\'', this._userId, note.ref.id);
+			this._notes.set(note.ref.id, note);
 			return note;
 		}
 		catch (error)
@@ -92,14 +100,65 @@ export class NotesDataSource implements OnRequest
 		}
 	}
 
-	async delete(_noteId: string)
+	async delete(noteId: string)
 	{
+		invariant(isString(this._userId) && !isEmpty(this._userId), 'NotesDataSource has an invalid user id');
+		invariant(!isEmpty(noteId), 'Invalid noteId was specified to \'delete\'')
 
+		try 
+		{
+			const client = await this.clientProvider.getClient(this._userId);
+			await client.query(
+				q.Delete(
+					q.Ref(q.Collection('Notes'), noteId)
+				)
+			)
+
+			this._notes.delete(noteId);
+		}
+		catch (error)
+		{
+			if ((error.message === 'invalid ref') ||
+				(error.message === 'instance not found'))
+				return;
+
+			notesLog.error('Failed to delete note \'%s\' for \'%s\': %s', noteId, this._userId, error.message || '');
+			notesLog.debug('Exception: %s', error);
+			throw error;
+		}		
 	}
 
-	async update(_noteId: string, _noteInput: NoteInput)
+	/**
+	 * Update the specified note with new parameters.
+	 */
+	async update(noteId: string, noteInput: NoteInput)
 	{
+		invariant(isString(this._userId) && !isEmpty(this._userId), 'NotesDataSource has an invalid user id');
 
+		try 
+		{
+			const client = await this.clientProvider.getClient(this._userId);
+			const note = await client.query<Note>(
+				q.Update(
+					q.Ref(q.Collection('Notes'), noteId),
+					{
+						data:{
+							content: noteInput.content || null,
+							attachment: noteInput.attachment || null
+						}
+					}
+				)
+			)
+
+			this._notes.set(note.ref.id, note);
+			return note;
+		}
+		catch (error)
+		{
+			notesLog.error('Failed to create a new note for \'%s\': %s', this._userId, error.message || '');
+			notesLog.debug('Exception: %s', error);
+			throw error;
+		}
 	}
 
 	/**
@@ -108,9 +167,12 @@ export class NotesDataSource implements OnRequest
 	async get(noteId: string)
 	{
 		invariant(isString(this._userId) && !isEmpty(this._userId), 'NotesDataSource has an invalid user id');
-		const note = this.notes.get(noteId);
+		const note = this._notes.get(noteId);
 		if (!isNil(note))
+		{
+			notesLog.debug('Used note \'%s\' from the data source cache', note.ref.id);
 			return note;
+		}
 
 		try
 		{
@@ -127,7 +189,7 @@ export class NotesDataSource implements OnRequest
 					)
 				);
 
-			console.log('note', note);
+			this._notes.set(note.ref.id, note);
 			return note;
 		}
 		catch (error)
@@ -141,8 +203,40 @@ export class NotesDataSource implements OnRequest
 		}
 	}
 
+	/**
+	 * Queries the datasource for notes.
+	 */
 	async query()
 	{
+		invariant(isString(this._userId) && !isEmpty(this._userId), 'NotesDataSource has an invalid user id');
 
+		// Query clears the cache
+		this._notes.clear();
+		try 
+		{
+			const client = await this.clientProvider.getClient(this._userId);
+			const me = await this.clientProvider.getUserRef(this._userId);
+
+			const results = await client.query<{data: Note[]}>(
+					q.Map(
+						q.Paginate(
+							q.Match(
+								q.Index('Notes_ByOwner'),
+								me
+							)
+						),
+						ref => q.Get(ref)
+					)
+				);
+			
+			results.data.forEach(note => this._notes.set(note.ref.id, note));
+			return results.data;
+		}
+		catch (error)
+		{
+			notesLog.error('Failed to query notes  user \'%s\'', this._userId);
+			notesLog.debug('Exception:', error);
+			throw error;
+		}
 	}
 }

@@ -8,6 +8,7 @@ import nanoid from 'nano-id';
 import process from 'process';
 import { isEmpty, isNil, isString } from 'lodash';
 import invariant from 'tiny-invariant';
+import chalk from 'chalk';
 
 interface CacheEntry
 {
@@ -131,7 +132,7 @@ export class DatabaseClientProvider
 		let entry = DatabaseClientProvider.store.get(userId);
 		if (!isNil(entry))
 		{
-			authLog.debug(`Using client from cache '%s'`, userId);
+			authLog.debug(`Using client from cache '%s'`, chalk.yellow(userId));
 			return entry;
 		}
 
@@ -140,17 +141,17 @@ export class DatabaseClientProvider
 		let userRef = await this._getRef(userId);
 		if (isNil(userRef))
 		{
-			authLog.info('Create new user for \'%s\' in database', userId);
+			authLog.info('Create new user for \'%s\' in database', chalk.yellow(userId));
 			userRef = await this._createUser(userId, generatedPassword);
 		}
 		else
 		{
-			authLog.info('Updated user \'%s\' in database', userId);
+			authLog.info('Updated user \'%s\' in database', chalk.yellow(userId));
 			await this._updateUser(userRef, generatedPassword);
 		}
 
 		// Login to create our client.
-		authLog.info('Logging user \'%s\' into database', userId);
+		authLog.info('Logging user \'%s\' into database', chalk.yellow(userId));
 		const token: string = await this._admin.query(
 			q.Select('secret',
 				q.Login(
@@ -162,7 +163,7 @@ export class DatabaseClientProvider
 			)
 		)
 		
-		authLog.info('Created new database client for \'%s\'', userId);
+		authLog.info('Created new database client for \'%s\'', chalk.yellow(userId));
 		entry = {
 			userRef,
 			client: new Client({ secret: token })
@@ -206,7 +207,7 @@ export class DatabaseClientProvider
 		if (entry)
 		{
 			await entry.client.query(q.Logout(true));
-			authLog.info('Logged \'%s\' of out if the datbase', userId);
+			authLog.info('Logged \'%s\' of out if the datbase', chalk.yellow(userId));
 		}
 	}
 }

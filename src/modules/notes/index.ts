@@ -2,21 +2,31 @@ import { GraphQLModule, ModuleContext } from "@graphql-modules/core";
 import { AuthenticatedContext, AuthenticationModule } from "../authentication";
 // @ts-ignore
 import typeDefs from './notes.gql';
-//import { notes } from './notes';
 import { NotesDataSource, Note, notesLog } from './notes-datasource';
 import { createNote } from './create-note';
+import { listNotes } from './list-notes';
 import { getNote } from './get-note';
+import { updateNote } from './update-note';
+import { deleteNote } from './delete-note';
 
+/**
+ * Represtation of the cotnext we consume, defining a customer interface
+ * which contains only the set we use makes testing eastier.
+ */
 export interface NotesModuleContext extends AuthenticatedContext
 {
 	notesDataSource: NotesDataSource
 }
 
+/**
+ * Defines the sub-set of our schema which is responsbile for handling our notes.
+ * (For this simple server this all we have.)
+ */
 export const NotesModule = new GraphQLModule({
 	typeDefs,
 	imports: [AuthenticationModule],
 	providers: [NotesDataSource],
-	context: (_session, currentContext: ModuleContext) => {
+	context: async (_session, currentContext: ModuleContext) => {
 		return {
 			notesDataSource: currentContext.injector.get(NotesDataSource)
 		} as NotesModuleContext;
@@ -24,9 +34,12 @@ export const NotesModule = new GraphQLModule({
 	resolvers:{
 		Query: {
 			note: getNote,
+			notes: listNotes,
 		},
 		Mutation: {
 			createNote,
+			updateNote,
+			deleteNote,
 		},
 		Note: {
 			noteId: (note: Note) => note.ref.id,

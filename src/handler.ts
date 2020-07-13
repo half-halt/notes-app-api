@@ -1,14 +1,14 @@
+import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-lambda';
 import { rootModule } from './modules/root-module';
-import 'reflect-metadata';
 
 const server = new ApolloServer({
     modules: [rootModule],
-    context: session => session,
+    context: session => session
 });
 
 exports.handler = server.createHandler({
-
+    ///TODO: CORS
 });
 
 /*exports.handler = (event: APIGatewayProxyEvent, context: any, callback: Callback<APIGatewayProxyResult>) => {
