@@ -8,7 +8,11 @@ const server = new ApolloServer({
 });
 
 exports.handler = server.createHandler({
-    ///TODO: CORS
+	cors:{
+		origin: '*',
+		credentials: true,
+		methods: 'POST'
+	}
 });
 
 /*exports.handler = (event: APIGatewayProxyEvent, context: any, callback: Callback<APIGatewayProxyResult>) => {
