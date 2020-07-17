@@ -7,7 +7,8 @@ const path = require('path');
 
 const commonConfig = {
   entry:{
-    server: path.resolve(__dirname, 'src', 'handler.ts')
+    pusherAuth: path.resolve(__dirname, 'src', 'pusherAuth.ts'),
+    notesApi: path.resolve(__dirname, 'src', 'handler.ts')
   },
   output:{
     path: path.resolve(__dirname, 'dist'),
@@ -49,26 +50,10 @@ const commonConfig = {
 
 const configs = {
   development: {
-    mode: 'development',
-    plugins:[
-      new CopyPlugin({
-        patterns:[{ 
-              from: path.resolve(__dirname, '.env'),
-              noErrorOnMissing: true
-        }]
-      })
-    ]
+    mode: 'development'
   },
   production: {
     mode: 'production',
-    plugins:[
-      new CopyPlugin({
-        patterns:[{
-          from: path.resolve(__dirname, '.env.production'),
-          noErrorOnMissing: true
-        }]
-      })
-    ],
     optimization: {
       minimize: true
     }

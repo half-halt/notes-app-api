@@ -7,6 +7,13 @@
 
 [[redirects]]
   from="/v1"
-  to="/.netlify/functions/server"
+  to="/.netlify/functions/notesApi"
   status=200
   force=true
+
+[[redirects]]
+  from="/pusher-auth"
+  to="/.netlify/functions/pusherAuth"
+  status=200
+  force=true
+
